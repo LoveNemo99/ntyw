@@ -22,8 +22,6 @@ public class UserServiceImpl implements UserService {
 	private TokenUtil tokenUtil;
 	@Override
 	public UserInfo login(String username,String password) {
-		logger.info("login==== "+username);
-//		Integer userId = userDao.login(username, password);
 		User user = userDao.loginUser(username, password);
 		if(user!=null&&user.getId()!=null) {
 			UserInfo userInfo = userDao.queryById(user.getId());

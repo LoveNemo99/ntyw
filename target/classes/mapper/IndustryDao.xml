@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tinz.ntyw.dao.IndustryDao">
+	<select id="getTree" resultType="Tree">
+		select
+			m.ID as id,
+			m.行业编码 as value,
+			m.行业名称 as text
+		from
+			IndustryClassCode as m
+	</select>
+</mapper>

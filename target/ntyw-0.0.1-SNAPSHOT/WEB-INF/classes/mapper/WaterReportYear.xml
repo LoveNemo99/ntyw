@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tinz.ntyw.dao.WaterReportYearDao">
+	<select id="queryRecord" resultType="java.util.HashMap" parameterType="Integer">
+		select t.id,t.entpId,t.portId,t.time,t.pollutantTypeId,t.pCou,t.entp,t.port,
+		<foreach collection="factors" item="factor" separator=",">
+			MAX(CASE e.污染物编码ID WHEN #{factor.id} THEN e.Avg END) AS ${factor.code+'avg'},
+			MAX(CASE e.污染物编码ID WHEN #{factor.id} THEN e.Cou END) AS ${factor.code+'cou'},
+			MAX(CASE e.污染物编码ID WHEN #{factor.id} THEN e.ZSAvg END) AS ${factor.code+'avgzs'}
+		</foreach>
+		from
+		(select 
+			m.ID as id,
+			m.企业基本信息ID as entpId,
+			m.设备信息ID as portId,
+			m.监测时间 as time,
+			m.污染物类别ID as pollutantTypeId,
+			m.时段量 as pCou,
+			e.企业名称 as entp,
+			p.排放口名称 as port
+		from
+			YearDataMain as m
+		left join EnterpriseInfor as e on e.ID = m.企业基本信息ID 
+		left join EquipmentInfor as p on p.ID = m.设备信息ID 
+		<where>
+			<if test = "entpId != null">
+				m.企业基本信息ID = #{entpId}
+			</if>
+			<if test = "portId != null">
+				AND m.设备信息ID = #{portId}
+			</if>
+			<if test = "startTime != null">
+				AND m.监测时间 >= #{startTime}
+			</if>
+			<if test = "endTime != null">
+				AND m.监测时间 <![CDATA[ <= ]]> #{endTime}
+			</if>
+		</where>) as t
+		left join
+			YearDataDetail as e
+		on
+			t.id = e.主年数据ID
+		group by t.id,t.entpId,t.portId,t.time,t.pollutantTypeId,t.pCou,t.entp,t.port
+		order by t.id desc
+	</select>
+</mapper>

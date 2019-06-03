@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tinz.ntyw.dao.EnterpriseDao">
+	<select id="queryById" resultType="Enterprise" parameterType="Integer">
+		select 
+			m.ID as id,
+			m.污染源编码 as code,
+			m.企业名称 as name,
+			m.组织机构代码 as orgCode,
+			m.行政区编码ID as cantonId,
+			c.行政区名称 as canton,
+			m.注册类型编码ID as regId,
+			r.登记注册类型 as reg,
+			m.单位类别编码ID as entpCatgId,
+			type.单位类别 as entpCatg,
+			m.企业规模编码ID as entpSizeId,
+			size.企业规模名称 as entpSize,
+			m.单位隶属关系编码ID as entpAffiId,
+			affi.隶属关系名称 as entpAffi,
+			m.行业分类编码ID as indusCatgId,
+			indus.行业名称 as indusCatg,
+			m.污染源等级ID as srcLevelId,
+			sys.代码名称 as srcLevel,
+			m.地址 as address,
+			m.中心经度 as centerLongitude,
+			m.中心纬度 as centerLatitude,
+			m.企业负责人 as entpPerson,
+			m.企业负责人电话 as entpPersonTel,
+			m.环保机构名称 as envAgency,
+			m.环保负责人 as envPerson,
+			m.环保负责人电话 as envPersonTel,
+			m.运维企业编码ID as maintEntpId,
+			main.运维企业名称 as maintEntp,
+			m.备注 as remark,
+			m.是否审核 as checked
+		from
+			EnterpriseInfor as m
+		left join CantonCode as c on c.ID = m.行政区编码ID 
+		left join RegistrationTypeCode as r on r.ID = m.注册类型编码ID 
+		left join UnitClassCode as type on type.ID = m.单位类别编码ID 
+		left join EnterpriseScaleCode as size on size.ID = m.企业规模编码ID 
+		left join EnterSuboRelatCode as affi on affi.ID = m.单位隶属关系编码ID 
+		left join IndustryClassCode as indus on indus.ID = m.行业分类编码ID 
+		left join SystemCode as sys on sys.ID = m.污染源等级ID 
+		left join MaintainEnterCode as main on main.ID = m.运维企业编码ID 
+		<where>
+			m.是否显示 = '是'
+			<if test = "id != null">
+				and m.ID = #{id}
+			</if>
+		</where>
+	</select>
+	<select id="getTree" resultType="Tree">
+		select
+			m.ID as id,
+			m.是否审核 as value,
+			m.企业名称 as text,
+			m.组织机构代码 as icon
+		from
+			EnterpriseInfor as m
+		<where>
+			m.是否显示 = '是'
+			<if test = "cantonIds != null">
+				AND m.行政区编码ID in ${cantonIds}
+			</if>
+			<if test = "industryId != null">
+				AND m.行业分类编码ID = #{industryId}
+			</if>
+			<if test = "entpParam != null">
+				AND m.企业名称 like #{entpParam}
+			</if>
+		</where>
+	</select>
+	<update id="check">
+		update 
+			EnterpriseInfor
+		set 
+			是否审核 = #{checked}
+		where 
+			ID = #{id}
+	</update>
+</mapper>

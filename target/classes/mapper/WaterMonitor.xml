@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tinz.ntyw.dao.WaterMonitorDao">
+	<select id="queryRecord" resultType="java.util.HashMap" parameterType="Integer">
+		select t.id,t.entpId,t.portId,t.time,t.pollutantTypeId,
+			t.rtd,t.rtd2,t.entp,t.port,t.monthCou,t.yearCou,t.tCou,t.electricState,t.valveState,t.doorState,
+			t.totalOnlineState,t.collectOnlineState,
+		<foreach collection="factors" item="factor" separator=",">
+			MAX(CASE e.污染物编码ID WHEN #{factor.id} THEN e.瞬时量 END) AS ${factor.code+'avg'},
+			MAX(CASE e.污染物编码ID WHEN #{factor.id} THEN e.折算瞬时量 END) AS ${factor.code+'avgzs'}
+		</foreach>
+		from
+		(select 
+			m.ID as id,
+			m.企业基本信息ID as entpId,
+			m.设备信息ID as portId,
+			m.实时数据时间 as time,
+			m.污染物类别ID as pollutantTypeId,
+			m.瞬时量 as rtd,
+			m.瞬时量备 as rtd2,
+			m.表显累计量 as tCou,
+			m.月排放量 as monthCou,
+			m.年排放量 as yearCou,
+			m.阀门状态 as valveState,
+			m.门禁状态 as doorState,
+			e.企业名称 as entp,
+			p.排放口名称 as port,
+			sys1.代码名称 as electricState,
+			sys2.代码名称 as totalOnlineState,
+			sys3.代码名称 as collectOnlineState
+		from
+			RealDataMonitorMain as m
+		left join EnterpriseInfor as e on e.ID = m.企业基本信息ID 
+		left join EquipmentInfor as p on p.ID = m.设备信息ID 
+		left join SystemCode as sys1 on sys1.ID = m.总量市电状态ID 
+		left join SystemCode as sys2 on sys2.ID = m.总量在线状态ID 
+		left join SystemCode as sys3 on sys3.ID = m.数采在线状态ID 
+		<where>
+			<if test = "entpId != null">
+				m.企业基本信息ID = #{entpId}
+			</if>
+			<if test = "portId != null">
+				AND m.设备信息ID = #{portId}
+			</if>
+			<if test = "startTime != null">
+				AND m.实时数据时间 >= #{startTime}
+			</if>
+			<if test = "endTime != null">
+				AND m.实时数据时间 <![CDATA[ <= ]]> #{endTime}
+			</if>
+		</where>) as t
+		left join
+			RealDataMonitorDetail as e
+		on
+			t.id = e.主实时监控ID
+		group by  t.id,t.entpId,t.portId,t.time,t.pollutantTypeId,
+			t.rtd,t.rtd2,t.entp,t.port,t.monthCou,t.yearCou,t.tCou,t.electricState,t.valveState,t.doorState,
+			t.totalOnlineState,t.collectOnlineState
+		order by t.id desc
+	</select>
+</mapper>

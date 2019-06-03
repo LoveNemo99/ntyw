@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tinz.ntyw.dao.LicenceDao">
+	<select id="queryRecord" resultType="java.util.HashMap" parameterType="Integer">
+		select t.id,t.entpId,t.portId,t.licenceNum,t.org,t.startDate,t.endDate,t.entp,t.port,t.checked,
+		<foreach collection="factors" item="factor" separator=",">
+			MAX(CASE e.污染物编码ID WHEN #{factor.id} THEN e.污染物浓度 END) AS ${factor.code+'nd'},
+			MAX(CASE e.污染物编码ID WHEN #{factor.id} THEN e.污染物年排放量 END) AS ${factor.code+'year'}
+		</foreach>
+		from
+		(select 
+			m.ID as id,
+			m.企业基本信息ID as entpId,
+			m.设备信息ID as portId,
+			m.许可证编号 as licenceNum,
+			m.发证机关 as org,
+			m.生效日期 as startDate,
+			m.截至日期 as endDate,
+			m.是否审核 as checked,
+			m.提交状态 as submit,
+			e.企业名称 as entp,
+			p.排放口名称 as port
+		from
+			许可证main as m
+		left join EnterpriseInfor as e on e.ID = m.企业基本信息ID 
+		left join EquipmentInfor as p on p.ID = m.设备信息ID 
+		<where>
+			<if test = "entpId != null">
+				m.企业基本信息ID = #{entpId}
+			</if>
+			<if test = "portId != null">
+				AND m.设备信息ID = #{portId}
+			</if>
+		</where>) as t
+		left join
+			许可证detail as e
+		on
+			t.id = e.许可证mainID
+		group by t.id,t.entpId,t.portId,t.licenceNum,t.org,t.startDate,t.endDate,t.entp,t.port,t.checked
+		order by t.id desc
+	</select>
+	<!-- m.提交状态 as submit, -->
+	<select id="queryLicenceDetail" resultType="java.util.HashMap" parameterType="Integer">
+		select 
+			m.ID as id,
+			m.污染物日排放量 as dayPi,
+			m.污染物年排放量 as yearPi,
+			m.污染物浓度 as nd,
+			m.污染物编码ID as factorId,
+			e.名称 as name
+		from
+			许可证detail as m
+		left join MonitorFactorCode as e on e.ID = m.污染物编码ID 
+		<where>
+			<if test = "mainId != null">
+				m.许可证mainID = #{mainId}
+			</if>
+		</where>
+	</select>
+	<select id="queryFactorLicence" resultType="java.util.HashMap" parameterType="Integer">
+		select * from 
+		(select 
+			m.ID as id,
+			e.污染物日排放量 as dayPi,
+			e.污染物年排放量 as yearPi,
+			e.污染物浓度 as nd,
+			e.污染物编码ID as factorId,
+			e.许可证mainID as mainId,
+			m.名称 as name,
+			u.计量单位名称 as unit
+		from
+			MonitorFactorCode  as m
+		left join 
+		(select * from 许可证detail as d
+		<where>
+			<if test = "mainId != null">
+				d.许可证mainID = #{mainId}
+			</if>
+		</where>) as e on e.污染物编码ID = m.ID 
+		left join MeasureuNnitCode as u on u.ID = m.浓度计量单位ID 
+		<where>
+			<if test = "typeId != null">
+				m.污染物类别ID = #{typeId}
+			</if>
+		</where>) as t
+	</select>
+	<update id="check">
+		update 
+			许可证main
+		set 
+			是否审核 = #{checked}
+		where 
+			ID = #{id} 
+		and
+			提交状态 = '已提交'
+	</update>
+</mapper>

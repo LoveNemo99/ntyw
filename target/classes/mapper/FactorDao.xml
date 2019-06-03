@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tinz.ntyw.dao.FactorDao">
+	<select id="queryByTypeId" resultType="Factor" parameterType="Integer">
+		select 
+			m.ID as id,
+			m.污染物类别ID as typeId,
+			m.污染物代码 as code,
+			m.污染物代码旧 as oldCode,
+			m.名称 as name,
+			m.浓度名称 as avgName,
+			m.排放量名称 as couName,
+			m.浓度计量单位ID as avgUnitId,
+			m.排放量计量单位ID as couUnitId,
+			type.类别名称 as type,
+			m.许单位 as title,
+			unit1.计量单位名称 as avgUnit,
+			unit2.计量单位名称 as couUnit
+		from
+			MonitorFactorCode as m
+		left join PollutantClass as type on type.ID = m.污染物类别ID 
+		left join MeasureuNnitCode as unit1 on unit1.ID = m.浓度计量单位ID 
+		left join MeasureuNnitCode as unit2 on unit2.ID = m.排放量计量单位ID 
+		<where>
+			<if test = "id != null">
+				m.污染物类别ID = #{id}
+			</if>
+		</where>
+	</select>
+	<select id="queryAll" resultType="Factor" parameterType="Integer">
+		select 
+			m.ID as id,
+			m.污染物类别ID as typeId,
+			m.污染物代码 as code,
+			m.污染物代码旧 as oldCode,
+			m.名称 as name,
+			m.浓度名称 as avgName,
+			m.排放量名称 as couName,
+			m.浓度计量单位ID as avgUnitId,
+			m.排放量计量单位ID as couUnitId,
+			type.类别名称 as type,
+			m.许单位 as title,
+			unit1.计量单位名称 as avgUnit,
+			unit2.计量单位名称 as couUnit
+		from
+			MonitorFactorCode as m
+		left join PollutantClass as type on type.ID = m.污染物类别ID 
+		left join MeasureuNnitCode as unit1 on unit1.ID = m.浓度计量单位ID 
+		left join MeasureuNnitCode as unit2 on unit2.ID = m.排放量计量单位ID 
+	</select>
+</mapper>

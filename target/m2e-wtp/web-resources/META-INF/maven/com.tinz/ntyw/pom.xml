@@ -183,7 +183,7 @@
 				 	<artifactId>maven-war-plugin</artifactId>				
 				 	<configuration>			
 					 	<warSourceExcludes>src/main/resources/**</warSourceExcludes>					
-					 	<warName>ys</warName>				
+					 	<warName>ntyw</warName>				
 				 	</configuration>
 				 </plugin>
 			</plugins>

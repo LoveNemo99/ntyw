@@ -30,15 +30,14 @@ public class UserController {
     {
     	response = new Response();
     	UserInfo u = userService.login(user.getUsername(), user.getPassword());
-    	System.out.println(u);
     	if (u == null)
         {
             response.setMsg(Response.FAIL,"验证失败，请检查账号密码",u);
             return ResponseEntity.ok(response);
         }
-    	UserInfo info = userService.getUserInfoByUsername(u.getUsername());
-    	u.setRole(info.getRole());
-    	u.setPsId(info.getPsId());
+//    	UserInfo info = userService.getUserInfoByUsername(u.getUsername());
+//    	u.setRole(info.getRole());
+//    	u.setPsId(info.getPsId());
         response.setMsg(Response.OK,"验证成功",u);
         return ResponseEntity.ok(response);
     }

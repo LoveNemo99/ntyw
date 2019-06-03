@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tinz.ntyw.dao.CantonDao">
+	<select id="queryById" resultType="Canton" parameterType="Integer">
+		select 
+			m.ID as id,
+			m.代码 as code,
+			m.行政区名称 as name
+		from
+			CantonCode as m
+		<where>
+			<if test = "id != null">
+				m.ID = #{id}
+			</if>
+		</where>
+	</select>
+	<select id="getTree" resultType="Tree">
+		select
+			m.ID as id,
+			m.代码 as value,
+			m.行政区名称 as text
+		from
+			CantonCode as m
+		<where>
+			m.ID in ${ids}
+		</where>
+	</select>
+	<select id="queryIdsByCode" resultType="Integer">
+		select
+			m.ID
+		from
+			CantonCode as m
+		<where>
+			m.代码 like #{param}
+		</where>
+	</select>	
+</mapper>

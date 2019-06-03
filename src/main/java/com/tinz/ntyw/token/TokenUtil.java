@@ -140,6 +140,7 @@ public class TokenUtil {
     //add by zr 2018-7-11
     public String getUsernameFromRequest(HttpServletRequest request){
         String authHeader = request.getHeader(this.tokenHeader);
+        System.out.println("===========================header:"+authHeader);
         String username = null;
         if (authHeader != null && authHeader.startsWith(tokenHead)) {
             final String authToken = authHeader.substring(tokenHead.length()); // The part after "Bearer "

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tinz.ntyw.dao.PortDao">
+	<select id="queryById" resultType="Port" parameterType="Integer">
+		select 
+			m.ID as id,
+			m.企业基本信息ID as entpId,
+			e.企业名称 as entp,
+			m.污染物类别ID as typeId,
+			m.排放口编码 as code,
+			m.排放口名称 as name,
+			m.企业端数采MN as mn1,
+			m.企业端数采二MN as mn2,
+			m.排放去向 as dest,
+			m.运维单位 as maintEntp,
+			type.类别名称 as type,
+			m.运维单位ID as maintEntpId,
+			m.是否审核 as checked,
+			m.安装设备 as equip,
+			m.备注 as remark,
+			m.通讯协议版本ID as protocolId,
+			pro.通讯协议版本 as protocol
+		from
+			EquipmentInfor as m
+		left join EnterpriseInfor as e on e.ID = m.企业基本信息ID 
+		left join PollutantClass as type on type.ID = m.污染物类别ID 
+		left join 数采通讯协议 as pro on pro.ID = m.通讯协议版本ID 
+		<where>
+			<if test = "id != null">
+				m.ID = #{id}
+			</if>
+		</where>
+	</select>
+	<select id="queryByEntpId" resultType="Port" parameterType="Integer">
+		select 
+			m.ID as id,
+			m.企业基本信息ID as entpId,
+			e.企业名称 as entp,
+			m.污染物类别ID as typeId,
+			m.排放口编码 as code,
+			m.排放口名称 as name,
+			m.企业端数采MN as mn1,
+			m.企业端数采二MN as mn2,
+			m.排放去向 as dest,
+			m.运维单位 as maintEntp,
+			type.类别名称 as type,
+			m.运维单位ID as maintEntpId,
+			m.是否审核 as checked,
+			m.安装设备 as equip,
+			m.备注 as remark,
+			m.通讯协议版本ID as protocolId,
+			pro.通讯协议版本 as protocol
+		from
+			EquipmentInfor as m
+		left join EnterpriseInfor as e on e.ID = m.企业基本信息ID 
+		left join PollutantClass as type on type.ID = m.污染物类别ID 
+		left join 数采通讯协议 as pro on pro.ID = m.通讯协议版本ID 
+		<where>
+			<if test = "id != null">
+				m.企业基本信息ID = #{id}
+			</if>
+		</where>
+	</select>
+	<select id="queryByEntpIdType" resultType="Port" parameterType="Integer">
+		select 
+			m.ID as id,
+			m.企业基本信息ID as entpId,
+			e.企业名称 as entp,
+			m.污染物类别ID as typeId,
+			m.排放口编码 as code,
+			m.排放口名称 as name,
+			m.企业端数采MN as mn1,
+			m.企业端数采二MN as mn2,
+			m.排放去向 as dest,
+			m.运维单位 as maintEntp,
+			type.类别名称 as type,
+			m.运维单位ID as maintEntpId,
+			m.是否审核 as checked,
+			m.安装设备 as equip,
+			m.备注 as remark,
+			m.通讯协议版本ID as protocolId,
+			pro.通讯协议版本 as protocol
+		from
+			EquipmentInfor as m
+		left join EnterpriseInfor as e on e.ID = m.企业基本信息ID 
+		left join PollutantClass as type on type.ID = m.污染物类别ID 
+		left join 数采通讯协议 as pro on pro.ID = m.通讯协议版本ID 
+		<where>
+			<if test = "id != null">
+				m.企业基本信息ID = #{id}
+			</if>
+			<if test = "typeId != null">
+				AND m.污染物类别ID = #{typeId}
+			</if>
+		</where>
+	</select>
+	<update id="check">
+		update 
+			EquipmentInfor
+		set 
+			是否审核 = #{checked}
+		where 
+			ID = #{id}
+	</update>
+</mapper>
